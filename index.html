@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>免费 Vercel 反向代理服务</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --hover-color: #45a049;
+            --background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--background);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--primary-color);
+            margin: 1rem auto;
+            border-radius: 2px;
+        }
+
+        .input-group {
+            position: relative;
+            margin: 2rem 0;
+            display: flex;
+            gap: 1rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+        }
+
+        button {
+            padding: 1rem 2rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            background: var(--hover-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .footer {
+            margin-top: auto;
+            padding: 2rem;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        .footer a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c3e50;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .footer a:hover {
+            background: rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 1rem;
+            height: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Vercel 反向代理服务</h1>
+        <div class="input-group">
+            <input 
+                type="text" 
+                id="input" 
+                placeholder="请输入需要代理的完整URL（例如：https://example.com）"
+                autocomplete="off"
+                spellcheck="false"
+            >
+            <button id="submitBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h13M12 5l7 7-7 7"/>
+                </svg>
+                立即代理
+            </button>
+        </div>
+        <div class="error-message" id="errorMsg"></div>
+    </div>
+
+    <div class="footer">
+        <a href="https://vercel.com/" target="_blank">
+            <img src="vercel.svg" alt="Vercel" width="80">
+        </a>
+        <a href="https://github.com/souying/vercel-api-proxy" target="_blank">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            </svg>
+            项目源码
+        </a>
+    </div>
+
+<script>
+    const urlPattern = /^(https?):\/\/[^\s/$.?#].[^\s]*$/i;
+    const input = document.getElementById('input');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    const showError = (message) => {
+        errorMsg.textContent = message;
+        input.classList.add('error');
+        setTimeout(() => input.classList.remove('error'), 2000);
+    };
+
+    const processUrl = () => {
+        const inputVal = input.value.trim();
+        errorMsg.textContent = '';
+
+        if (!inputVal) {
+            return showError('请输入有效的URL地址');
+        }
+
+        if (!urlPattern.test(inputVal)) {
+            return showError('URL格式不正确，请包含http/https协议头');
+        }
+
+        try {
+            const urlObj = new URL(inputVal);
+            const proxyUrl = `${location.origin}/proxy/${btoa(urlObj.href)}`;
+            window.open(proxyUrl, '_blank');
+            input.value = '';
+        } catch (error) {
+            showError('无效的URL地址，请检查输入');
+        }
+    };
+
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') processUrl();
+    });
+
+    submitBtn.addEventListener('click', processUrl);
+
+    // 输入时实时验证
+    input.addEventListener('input', () => {
+        if (urlPattern.test(input.value.trim())) {
+            errorMsg.textContent = '';
+        }
+    });
+</script>
+</body>
+</html>
