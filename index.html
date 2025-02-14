@@ -1,87 +1,294 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vercel Edge Proxy</title>
+    <title>Vercel 边缘代理服务</title>
     <style>
-        html,body,body div,span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,abbr,address,cite,code,del,dfn,em,img,ins,kbd,q,samp,small,strong,sub,sup,var,b,i,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,figure,footer,header,hgroup,menu,nav,section,time,mark,audio,video,details,summary{margin:0;padding:0;border:0;font-size:100%;vertical-align:baseline;background:transparent;}html,body,.wrapper{height:100%;width:100%;background-image:linear-gradient(to top,#c1dfc4 0%,#deecdd 100%);}input{font-family:inherit;}*,html,body{font-family:"Lato",serif;font-size:15px;font-weight:300;line-height:22px;}*:focus{outline:none;}*,*:before,*:after{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}.UrlCheck{opacity:1;height:auto;}.UrlCheck{margin-top:0px !important;}.row{position:relative;width:100%;}.row:before,.row:after{content:"";display:table;line-height:0;}.row [class*="span"].noFloat{float:none;margin:2% auto;overflow:hidden;}.UrlCheck .span10{margin-top:70px !important;}h1.splash{font-size:48px;margin:0;margin-top:130px;margin-bottom:0px;line-height:52px;color:#FFF;text-shadow:0px 2px 4px rgba(0,0,0,0.5);}strong{font-weight:bold;}.UrlCheck .span10{background:rgba(255,255,255,0.5);padding:7px;overflow:hidden;margin-top:0px !important;max-width:800px;}.margin .span10{width:81.33333%;}.row [class*="span"]{float:left;position:relative;}textarea,input[type="text"],input[type="password"]{width:100%;background:#FFF;border:0px solid #CCC;padding:8px 5px;color:#333;}textarea,input[type="text"],input[type="password"]{width:75%;background:#EFEFEF;border:0px solid #CCC;padding:8px 5px;color:#22225d;float:left;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;}.row .textCenter{text-align:center;background:none;}.UrlCheck input[type="text"]{-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;font-size:20px;height:58px;line-height:58px;width:100%;float:left;padding-left:10px;}.UrlCheck input[type="text"]{-webkit-border-radius:0px;-moz-border-radius:0px;border-radius:0px;-webkit-border-top-left-radius:4px;-moz-border-top-left-radius:4px;border-top-left-radius:4px;-webkit-border-bottom-left-radius:4px;-moz-border-bottom-left-radius:4px;border-bottom-left-radius:4px;font-size:20px;height:58px;line-height:58px;width:70%;float:left;padding-left:10px;background:#FFF;}.UrlCheck #submitBtn{position:absolute;-webkit-border-radius:0px;-moz-border-radius:0px;border-radius:0px;-webkit-border-top-right-radius:4px;-moz-border-top-right-radius:4px;border-top-right-radius:4px;-webkit-border-bottom-right-radius:4px;-moz-border-bottom-right-radius:4px;border-bottom-right-radius:4px;background:#9dca68;font-size:18px;height:58px;line-height:58px;border:0;font-weight:400;width:30%;text-align:center;margin-top:0px;color:#FFF;cursor:pointer;right:7px;top:7px;}a,a:visited{color:#22225e;text-decoration:none;}.footer{text-align:center;margin-top:-70px;padding:25px 0 0 0;z-index:1000;background:rgba(0,0,0,0.5);height:70px;}.footer a{margin-right:20px;}
+        :root {
+            --primary: #0070f3;
+            --success: #18c964;
+            --error: #f31260;
+            --text-primary: #11181c;
+            --background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 720px;
+            margin-top: 4rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), #0061d1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .description {
+            color: #687076;
+            font-size: 1.1rem;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .input-group {
+            position: relative;
+            width: 100%;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .input-group:focus-within {
+            box-shadow: 0 8px 24px -2px rgba(var(--primary), 0.16);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            border: 2px solid #ecedee;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .submit-btn {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: calc(var(--radius) - 4px);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-50%) scale(0.98);
+        }
+
+        .footer {
+            margin-top: auto;
+            padding: 2rem;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #687076;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        .status-indicator {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            background: var(--success);
+            color: white;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(100%);
+            transition: var(--transition);
+        }
+
+        .status-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .container {
+                margin-top: 2rem;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .submit-btn {
+                position: static;
+                width: 100%;
+                margin-top: 1rem;
+                transform: none;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="wrapper">
-        <div class="UrlCheck">
-            <div class="row margin">
-                <div class="span10 noFloat textCenter">
-                    <h1 class="splash">Vercel反向代理</strong></h1>
-                </div>
-                <div class="span10 noFloat">
-                    <div class="searchform">
-                        <input type="text" id="input" placeholder="请输入URL" name="domainname">
-                        <a id="submitBtn" title="反向代理">Reverse Proxy</a>
-                    </div>
-                </div>
-            </div>
+    <div class="container">
+        <header>
+            <h1 class="title">Vercel-Edge-Proxy</h1>
+            <p class="description">输入目标URL地址，通过Vercel边缘网络进行安全代理访问</p>
+        </header>
+
+        <div class="input-group">
+            <input 
+                type="url" 
+                class="input-field"
+                id="input" 
+                placeholder="https://example.com"
+                spellcheck="false"
+                autocomplete="off"
+                enterkeyhint="go"
+            >
+            <button class="submit-btn" id="submitBtn">
+                立即代理
+                <span aria-hidden="true">→</span>
+            </button>
         </div>
     </div>
 
-
     <div class="footer">
-        <a href="https://vercel.com/" target="_blank"><img alt="vercel"
-                src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iODMiIGhlaWdodD0iMjAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0i5Z+65LqOdmVyY2VsIj48dGl0bGU+5Z+65LqOdmVyY2VsPC90aXRsZT48ZyBzaGFwZS1yZW5kZXJpbmc9ImNyaXNwRWRnZXMiPjxyZWN0IHdpZHRoPSIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjNTU1Ii8+PHJlY3QgeD0iMCIgd2lkdGg9IjgzIiBoZWlnaHQ9IjIwIiBmaWxsPSIjMzMzMzMzIi8+PC9nPjxnIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJWZXJkYW5hLEdlbmV2YSxEZWphVnUgU2FucyxzYW5zLXNlcmlmIiB0ZXh0LXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIiBmb250LXNpemU9IjExMCI+PGltYWdlIHg9IjUiIHk9IjMiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgeGxpbms6aHJlZj0iZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCbWFXeHNQU0ozYUdsMFpYTnRiMnRsSWlCeWIyeGxQU0pwYldjaUlIWnBaWGRDYjNnOUlqQWdNQ0F5TkNBeU5DSWdlRzFzYm5NOUltaDBkSEE2THk5M2QzY3Vkek11YjNKbkx6SXdNREF2YzNabklqNDhkR2wwYkdVK1ZtVnlZMlZzUEM5MGFYUnNaVDQ4Y0dGMGFDQmtQU0pOTWpRZ01qSXVOVEkxU0RCc01USXRNakV1TURVZ01USWdNakV1TURWNklpOCtQQzl6ZG1jKyIvPjx0ZXh0IHg9IjUwNSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgZmlsbD0iI2ZmZiIgdGV4dExlbmd0aD0iNTUwIj7ln7rkuo52ZXJjZWw8L3RleHQ+PC9nPjwvc3ZnPg=="></a>
-        <a href="#" target="_blank"><span></span><img alt="status"
-                src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iOTYiIGhlaWdodD0iMjAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0ic3RhdHVzOiBzdWNjZXNzIj48dGl0bGU+c3RhdHVzOiBzdWNjZXNzPC90aXRsZT48bGluZWFyR3JhZGllbnQgaWQ9InMiIHgyPSIwIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjYmJiIiBzdG9wLW9wYWNpdHk9Ii4xIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLW9wYWNpdHk9Ii4xIi8+PC9saW5lYXJHcmFkaWVudD48Y2xpcFBhdGggaWQ9InIiPjxyZWN0IHdpZHRoPSI5NiIgaGVpZ2h0PSIyMCIgcng9IjMiIGZpbGw9IiNmZmYiLz48L2NsaXBQYXRoPjxnIGNsaXAtcGF0aD0idXJsKCNyKSI+PHJlY3Qgd2lkdGg9IjQzIiBoZWlnaHQ9IjIwIiBmaWxsPSIjNTU1Ii8+PHJlY3QgeD0iNDMiIHdpZHRoPSI1MyIgaGVpZ2h0PSIyMCIgZmlsbD0iIzk3Y2EwMCIvPjxyZWN0IHdpZHRoPSI5NiIgaGVpZ2h0PSIyMCIgZmlsbD0idXJsKCNzKSIvPjwvZz48ZyBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iVmVyZGFuYSxHZW5ldmEsRGVqYVZ1IFNhbnMsc2Fucy1zZXJpZiIgdGV4dC1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiIgZm9udC1zaXplPSIxMTAiPjx0ZXh0IGFyaWEtaGlkZGVuPSJ0cnVlIiB4PSIyMjUiIHk9IjE1MCIgZmlsbD0iIzAxMDEwMSIgZmlsbC1vcGFjaXR5PSIuMyIgdHJhbnNmb3JtPSJzY2FsZSguMSkiIHRleHRMZW5ndGg9IjMzMCI+c3RhdHVzPC90ZXh0Pjx0ZXh0IHg9IjIyNSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgZmlsbD0iI2ZmZiIgdGV4dExlbmd0aD0iMzMwIj5zdGF0dXM8L3RleHQ+PHRleHQgYXJpYS1oaWRkZW49InRydWUiIHg9IjY4NSIgeT0iMTUwIiBmaWxsPSIjMDEwMTAxIiBmaWxsLW9wYWNpdHk9Ii4zIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgdGV4dExlbmd0aD0iNDMwIj5zdWNjZXNzPC90ZXh0Pjx0ZXh0IHg9IjY4NSIgeT0iMTQwIiB0cmFuc2Zvcm09InNjYWxlKC4xKSIgZmlsbD0iI2ZmZiIgdGV4dExlbmd0aD0iNDMwIj5zdWNjZXNzPC90ZXh0PjwvZz48L3N2Zz4="></a>
-        <a href="https://github.com/elykia-cn/Vercel-Edge-Proxy" target="_blank"><img alt="github"
-                src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iODciIGhlaWdodD0iMjAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iR2l0aHVi5LuT5bqTIj48dGl0bGU+R2l0aHVi5LuT5bqTPC90aXRsZT48ZyBzaGFwZS1yZW5kZXJpbmc9ImNyaXNwRWRnZXMiPjxyZWN0IHdpZHRoPSIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjNTU1Ii8+PHJlY3QgeD0iMCIgd2lkdGg9Ijg3IiBoZWlnaHQ9IjIwIiBmaWxsPSIjMzMzMzMzIi8+PC9nPjxnIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJWZXJkYW5hLEdlbmV2YSxEZWphVnUgU2FucyxzYW5zLXNlcmlmIiB0ZXh0LXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIiBmb250LXNpemU9IjExMCI+PGltYWdlIHg9IjUiIHk9IjMiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgeGxpbms6aHJlZj0iZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCbWFXeHNQU0ozYUdsMFpYTnRiMnRsSWlCeWIyeGxQU0pwYldjaUlIWnBaWGRDYjNnOUlqQWdNQ0F5TkNBeU5DSWdlRzFzYm5NOUltaDBkSEE2THk5M2QzY3Vkek11YjNKbkx6SXdNREF2YzNabklqNDhkR2wwYkdVK1IybDBTSFZpUEM5MGFYUnNaVDQ4Y0dGMGFDQmtQU0pOTVRJZ0xqSTVOMk10Tmk0Mk15QXdMVEV5SURVdU16Y3pMVEV5SURFeUlEQWdOUzR6TURNZ015NDBNemdnT1M0NElEZ3VNakExSURFeExqTTROUzQyTGpFeE15NDRNaTB1TWpVNExqZ3lMUzQxTnpjZ01DMHVNamcxTFM0d01TMHhMakEwTFM0d01UVXRNaTR3TkMwekxqTXpPQzQzTWpRdE5DNHdOREl0TVM0Mk1TMDBMakEwTWkweExqWXhRelF1TkRJeUlERTRMakEzSURNdU5qTXpJREUzTGpjZ015NDJNek1nTVRjdU4yTXRNUzR3T0RjdExqYzBOQzR3T0RRdExqY3lPUzR3T0RRdExqY3lPU0F4TGpJd05TNHdPRFFnTVM0NE16Z2dNUzR5TXpZZ01TNDRNemdnTVM0eU16WWdNUzR3TnlBeExqZ3pOU0F5TGpnd09TQXhMak13TlNBekxqUTVOUzQ1T1RndU1UQTRMUzQzTnpZdU5ERTNMVEV1TXpBMUxqYzJMVEV1TmpBMUxUSXVOalkxTFM0ekxUVXVORFkyTFRFdU16TXlMVFV1TkRZMkxUVXVPVE1nTUMweExqTXhMalEyTlMweUxqTTRJREV1TWpNMUxUTXVNakl0TGpFek5TMHVNekF6TFM0MU5DMHhMalV5TXk0eE1EVXRNeTR4TnpZZ01DQXdJREV1TURBMUxTNHpNaklnTXk0eklERXVNak11T1RZdExqSTJOeUF4TGprNExTNHpPVGtnTXkwdU5EQTFJREV1TURJdU1EQTJJREl1TURRdU1UTTRJRE1nTGpRd05TQXlMakk0TFRFdU5UVXlJRE11TWpnMUxURXVNak1nTXk0eU9EVXRNUzR5TXk0Mk5EVWdNUzQyTlRNdU1qUWdNaTQ0TnpNdU1USWdNeTR4TnpZdU56WTFMamcwSURFdU1qTWdNUzQ1TVNBeExqSXpJRE11TWpJZ01DQTBMall4TFRJdU9EQTFJRFV1TmpJMUxUVXVORGMxSURVdU9USXVOREl1TXpZdU9ERWdNUzR3T1RZdU9ERWdNaTR5TWlBd0lERXVOakEyTFM0d01UVWdNaTQ0T1RZdExqQXhOU0F6TGpJNE5pQXdJQzR6TVRVdU1qRXVOamt1T0RJMUxqVTNRekl3TGpVMk5TQXlNaTR3T1RJZ01qUWdNVGN1TlRreUlESTBJREV5TGpJNU4yTXdMVFl1TmpJM0xUVXVNemN6TFRFeUxURXlMVEV5SWk4K1BDOXpkbWMrIi8+PHRleHQgeD0iNTI1IiB5PSIxNDAiIHRyYW5zZm9ybT0ic2NhbGUoLjEpIiBmaWxsPSIjZmZmIiB0ZXh0TGVuZ3RoPSI1OTAiPkdpdGh1YuS7k+W6kzwvdGV4dD48L2c+PC9zdmc+"></a>
+        <a href="https://vercel.com" class="footer-link" target="_blank">
+            <svg width="20" height="20" viewBox="0 0 283 64" fill="currentColor"><path d="M141 16c-11 0-19 7-19 18s9 18 20 18c7 0 13-3 16-7l-7-5c-2 3-6 4-9 4-5 0-9-3-10-7h28v-3c0-11-8-18-19-18zm-9 15c1-4 4-7 9-7s8 3 9 7h-18zm117-15c-11 0-19 7-19 18s9 18 20 18c6 0 12-3 16-7l-8-5c-2 3-5 4-8 4-5 0-9-3-11-7h28l1-3c0-11-8-18-19-18zm-10 15c2-4 5-7 10-7s8 3 9 7h-19zm-39 3c0 6 4 10 10 10 4 0 7-2 9-5l8 5c-3 5-9 8-17 8-11 0-19-7-19-18s8-18 19-18c8 0 14 3 17 8l-8 5c-2-3-5-5-9-5-6 0-10 4-10 10zm83-29v46h-9V5h9zM237 5c-11 0-19 7-19 18s9 18 20 18c6 0 12-3 16-7l-8-5c-2 3-5 4-8 4-5 0-9-3-11-7h28l1-3c0-11-8-18-19-18zm-10 15c2-4 5-7 10-7s8 3 9 7h-19zm-70 29c0 6 4 10 10 10 4 0 7-2 9-5l8 5c-3 5-9 8-17 8-11 0-19-7-19-18s8-18 19-18c8 0 14 3 17 8l-8 5c-2-3-5-5-9-5-6 0-10 4-10 10z"/></svg>
+            Vercel
+        </a>
+        
+        <a href="https://github.com/elykia-cn/Vercel-Edge-Proxy" class="footer-link" target="_blank">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+            GitHub
+        </a>
     </div>
+
+    <div id="status" class="status-indicator" aria-live="polite"></div>
 </body>
+
 <script>
-    // 这个是正则的啊喂
-    const urlPattern = /^(http|https):\/\/[^ "]+$/;
+    const URL_PATTERN = /^(https?:\/\/)?([\w-]+\.)+\w{2,}(\/.*)?$/i;
+    const DEBOUNCE_DELAY = 300;
 
-    // 提前把变量定义出来
-    const input = document.getElementById('input');
-    const submit = document.getElementById('submitBtn');
-
-    // 监听一个键盘的Enter事件
-    input.addEventListener("keyup", (event) => {
-        if (event.key === "Enter") {
-            console.log("Enter键被按下了");
-            // 执行你的操作
-            jumpFn(event)
+    class ProxyService {
+        constructor() {
+            this.input = document.getElementById('input');
+            this.submitBtn = document.getElementById('submitBtn');
+            this.status = document.getElementById('status');
+            
+            this.initEventListeners();
         }
-    });
 
-    // 箭筒一个 按钮被点击的事件
-    submit.addEventListener('click', jumpFn)
+        initEventListeners() {
+            this.input.addEventListener('input', this.debounce(this.validateInput, DEBOUNCE_DELAY));
+            this.input.addEventListener('keypress', e => e.key === 'Enter' && this.handleSubmit());
+            this.submitBtn.addEventListener('click', () => this.handleSubmit());
+        }
 
-    // 这个是 主函数
-    function jumpFn(event) {
-        const inputVal = input.value;
-        // 执行你的操作
-        if (!inputVal) {
-            console.log("这也妹有输入内容鸭！");
-        } else if (!urlPattern.test(inputVal)) {
-            // 输入的内容不是 URL，给出提示信息
-            alert("你得输入有效的 URL鸭！");
-        } else {
-            // 业务逻辑
-            console.log('开始处理业务逻辑')
-            // 获取当前的url
-            // const BaseUrl = 'https://vercel-edge-proxy.vercel.app';
-            const BaseUrl = location.origin;
-            // 把输入的内容一截两段
-            const [protocol, hostname] = inputVal.split(':/');
+        debounce(fn, delay) {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => fn.apply(this, args), delay);
+            }
+        }
 
-            // 拼接跳转链接
-            const jumpUrl = `${BaseUrl}/${protocol}${hostname}`;
-            // console.log(jumpUrl)
-            // 跳出去
-            window.open(jumpUrl, "_blank");
-            // 完成
+        validateInput() {
+            const isValid = URL_PATTERN.test(this.input.value);
+            this.submitBtn.disabled = !isValid;
+            this.input.setAttribute('aria-invalid', !isValid);
+        }
+
+        showStatus(message, type = 'success') {
+            this.status.textContent = message;
+            this.status.style.background = `var(--${type})`;
+            this.status.classList.add('status-visible');
+            setTimeout(() => {
+                this.status.classList.remove('status-visible');
+            }, 3000);
+        }
+
+        async handleSubmit() {
+            const url = this.input.value.trim();
+            
+            if (!URL_PATTERN.test(url)) {
+                this.showStatus('请输入有效的URL地址', 'error');
+                return;
+            }
+
+            try {
+                this.submitBtn.disabled = true;
+                this.submitBtn.textContent = '处理中...';
+                
+                const targetUrl = new URL(url.startsWith('http') ? url : `https://${url}`);
+                const proxyUrl = `${location.origin}/${targetUrl.protocol.slice(0, -1)}/${targetUrl.hostname}${targetUrl.pathname}`;
+                
+                window.open(proxyUrl, '_blank');
+                this.showStatus('代理请求已发送');
+            } catch (error) {
+                this.showStatus('处理URL时发生错误', 'error');
+                console.error('Proxy Error:', error);
+            } finally {
+                this.submitBtn.disabled = false;
+                this.submitBtn.textContent = '立即代理 →';
+            }
         }
     }
+
+    // 初始化应用
+    document.addEventListener('DOMContentLoaded', () => {
+        new ProxyService();
+    });
 </script>
 
 </html>
